@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Effex
@@ -19,7 +20,6 @@ namespace Effex
                 var proc = Program.RunCommandSilent(cmd);
                 DisableInstall();
                 InstallMgfxcButton.Text = "Working, Please Wait.";
-                proc.WaitForExit();
 
                 if(proc.ExitCode != 0)
                 {
@@ -42,6 +42,24 @@ namespace Effex
                 UseShellExecute = true
             };
             Process.Start(psi);
+        }
+
+        private void ManualCompile(object sender, System.EventArgs e)
+        {
+            using(var select = new OpenFileDialog())
+            {
+                if(select.ShowDialog() == DialogResult.OK)
+                {
+                    var exit = Program.CompileFX(select.FileName);
+                    if(exit != null)
+                    {
+                        var errors = new List<ErrorPair>();
+                        errors.Add(exit);
+                        var console = new ErrorConsole(errors);
+                        console.Show();
+                    }
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -7,13 +8,12 @@ namespace Effex
 {
     static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
+        static bool IsDump = false;
+        static List<ErrorPair> Errors = new List<ErrorPair>();
+
         [STAThread]
         static void Main(string[] args)
         {
-            bool IsDump = false;
             try
             {
                 Finder.Find();
@@ -23,46 +23,83 @@ namespace Effex
                     if (!String.IsNullOrEmpty(ext) && ext.Trim('.').ToLower() == "fx")
                     {
                         IsDump = true;
-                        CompileFX(args[i]);
+                        var exit = CompileFX(args[i]);
+                        if(exit != null)
+                        {
+                            Errors.Add(exit);
+                        }
                     }
                 }
-                if (IsDump)
-                    return;
             }
             catch
             {
                 Finder.NeedsToRefind = true;
             }
 
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            using (var console = new EffexConsole())
+            if (IsDump)
             {
-                if (!Finder.NeedsToRefind)
-                    console.DisableInstall();
-                Application.Run(console);
-            }
+                if(Errors.Count > 0)
+                {
+                    Application.SetHighDpiMode(HighDpiMode.SystemAware);
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
 
+                    using (var errorCon = new ErrorConsole(Errors))
+                    {
+                        Application.Run(errorCon);
+                    }
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                Application.SetHighDpiMode(HighDpiMode.SystemAware);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
+                using (var console = new EffexConsole())
+                {
+                    if (!Finder.NeedsToRefind)
+                        console.DisableInstall();
+                    Application.Run(console);
+                }
+            }
         }
 
-        static void CompileFX(string file)
+        public static ErrorPair CompileFX(string file)
         {
             var destination = Path.ChangeExtension(file, ".mgfxo");
             var cmd = $"{Finder.EffectCompilerPath} {file} {destination}";
-            RunCommandSilent(cmd);
+            var proc = RunCommandSilent(cmd);
+            if(proc.ExitCode != 0)
+            {
+                var exit = new ErrorPair()
+                {
+                    StandardOutput = proc.StandardOutput.ReadToEnd(),
+                    ErrorOutput = proc.StandardError.ReadToEnd(),
+                };
+                return exit;
+            }
+            proc.Dispose();
+
+            return null;
         }
 
         public static Process RunCommandSilent(string cmd)
         {
             Process proc = new Process();
             proc.StartInfo = new ProcessStartInfo();
-            proc.StartInfo.UseShellExecute = true;
-            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
             proc.StartInfo.FileName = "cmd.exe";
             proc.StartInfo.Arguments = $"/C {cmd}";
             proc.Start();
+            proc.WaitForExit();
             return proc;
         }
     }
