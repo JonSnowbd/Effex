@@ -50,13 +50,20 @@ namespace Effex
         static void CompileFX(string file)
         {
             var destination = Path.ChangeExtension(file, ".mgfxo");
+            var cmd = $"{Finder.EffectCompilerPath} {file} {destination}";
+            RunCommandSilent(cmd);
+        }
+
+        public static Process RunCommandSilent(string cmd)
+        {
             Process proc = new Process();
             proc.StartInfo = new ProcessStartInfo();
             proc.StartInfo.UseShellExecute = true;
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.FileName = "cmd.exe";
-            proc.StartInfo.Arguments = $"/C {Finder.EffectCompilerPath} {file} {destination}";
+            proc.StartInfo.Arguments = $"/C {cmd}";
             proc.Start();
+            return proc;
         }
     }
 }

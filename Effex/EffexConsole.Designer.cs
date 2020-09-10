@@ -34,8 +34,8 @@
         private void InitializeComponent()
         {
             this.EffexTitleGroupBox = new System.Windows.Forms.GroupBox();
-            this.InstallMgfxcButton = new System.Windows.Forms.Button();
             this.GoToGithubLink = new System.Windows.Forms.Button();
+            this.InstallMgfxcButton = new System.Windows.Forms.Button();
             this.EffexTitleGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,17 +53,6 @@
             this.EffexTitleGroupBox.TabStop = false;
             this.EffexTitleGroupBox.Text = "Effex";
             // 
-            // InstallMgfxcButton
-            // 
-            this.InstallMgfxcButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.InstallMgfxcButton.Location = new System.Drawing.Point(6, 22);
-            this.InstallMgfxcButton.Name = "InstallMgfxcButton";
-            this.InstallMgfxcButton.Size = new System.Drawing.Size(291, 39);
-            this.InstallMgfxcButton.TabIndex = 0;
-            this.InstallMgfxcButton.Text = "Install MGFXC.exe";
-            this.InstallMgfxcButton.UseVisualStyleBackColor = true;
-            // 
             // GoToGithubLink
             // 
             this.GoToGithubLink.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -74,6 +63,19 @@
             this.GoToGithubLink.TabIndex = 1;
             this.GoToGithubLink.Text = "Github";
             this.GoToGithubLink.UseVisualStyleBackColor = true;
+            this.GoToGithubLink.Click += new System.EventHandler(this.OpenGithub);
+            // 
+            // InstallMgfxcButton
+            // 
+            this.InstallMgfxcButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.InstallMgfxcButton.Location = new System.Drawing.Point(6, 22);
+            this.InstallMgfxcButton.Name = "InstallMgfxcButton";
+            this.InstallMgfxcButton.Size = new System.Drawing.Size(291, 39);
+            this.InstallMgfxcButton.TabIndex = 0;
+            this.InstallMgfxcButton.Text = "Install MGFXC.exe";
+            this.InstallMgfxcButton.UseVisualStyleBackColor = true;
+            this.InstallMgfxcButton.Click += new System.EventHandler(this.InstallButtonClicked);
             // 
             // EffexConsole
             // 
